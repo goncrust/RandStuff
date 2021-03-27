@@ -24,12 +24,14 @@ function init() {
 
     z = 0;
 
-    window.requestAnimationFrame(mainLoop);
+    setInterval(mainLoop, 1)
+    //window.requestAnimationFrame(mainLoop);
 
 }
 
-function mainLoop(timeStamp) {
-    if (z != 600) {
+//function mainLoop(timeStamp) {
+function mainLoop() {
+    if (z != canvas_width) {
         if (rect_height[z] > rect_height[z + 1]) {
             let c = rect_height[z];
             rect_height[z] = rect_height[z + 1];
@@ -43,13 +45,13 @@ function mainLoop(timeStamp) {
         if (change) {
             z = 0;
         } else {
-            z = 600;
+            z = canvas_width;
         }
     }
 
     render_graph();
 
-    window.requestAnimationFrame(mainLoop);
+    //window.requestAnimationFrame(mainLoop);
 }
 
 function generate_heights() {
