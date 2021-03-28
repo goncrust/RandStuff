@@ -9,7 +9,9 @@ let rect_height = [];
 window.onload = init;
 
 let z;
+let y;
 let change = false;
+let done = false;
 
 function init() {
     canvas = document.getElementById("display");
@@ -23,33 +25,37 @@ function init() {
     render_graph();
 
     z = 0;
+    y = canvas_width - 1;
 
-    setInterval(mainLoop, 1)
+    setInterval(mainLoop, 1);
     //window.requestAnimationFrame(mainLoop);
 
 }
 
 //function mainLoop(timeStamp) {
 function mainLoop() {
-    if (z != canvas_width) {
-        if (rect_height[z] > rect_height[z + 1]) {
-            let c = rect_height[z];
-            rect_height[z] = rect_height[z + 1];
-            rect_height[z + 1] = c;
+    if (!done) {
+        if (z != y) {
+            if (rect_height[z] > rect_height[z + 1]) {
+                let c = rect_height[z];
+                rect_height[z] = rect_height[z + 1];
+                rect_height[z + 1] = c;
 
-            change = true;
-        }
+                change = true;
+            }
 
-        z++;
-    } else {
-        if (change) {
-            z = 0;
+            z++;
         } else {
-            z = canvas_width;
+            if (change) {
+                z = 0;
+                y--;
+            } else {
+                done = true;
+            }
         }
     }
 
-    render_graph();
+    render_graph(z);
 
     //window.requestAnimationFrame(mainLoop);
 }
@@ -70,14 +76,18 @@ function generate_heights() {
     console.log(rect_height);
 }
 
-function render_graph() {
+function render_graph(red) {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (let i = 0; i < rect_height.length; i++) {
         ctx.beginPath();
         ctx.rect(i, canvas_height - rect_height[i], 1, rect_height[i]);
-        ctx.fillStyle = '#00000';
+        if (red == i) {
+            ctx.fillStyle = '#ff0000';
+        } else {
+            ctx.fillStyle = '#000000';
+        }
         ctx.fill();
         ctx.closePath();
     }
