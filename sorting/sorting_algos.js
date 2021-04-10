@@ -10,7 +10,6 @@ window.onload = init;
 
 let z;
 let y;
-let change = false;
 let done = false;
 
 function init() {
@@ -21,6 +20,8 @@ function init() {
     canvas_height = canvas.getBoundingClientRect().height;
 
     generate_heights();
+
+    //sort();
 
     render_graph();
 
@@ -40,16 +41,15 @@ function mainLoop() {
                 let c = rect_height[z];
                 rect_height[z] = rect_height[z + 1];
                 rect_height[z + 1] = c;
-
-                change = true;
             }
 
             z++;
         } else {
-            if (change) {
+            if (y != 1) {
                 z = 0;
                 y--;
             } else {
+                z = 0;
                 done = true;
             }
         }
@@ -94,19 +94,15 @@ function render_graph(red) {
 }
 
 function sort() {
-    do {
-        var changed = false;
-        for (let i = 0; i < rect_height.length; i++) {
-            //render_graph();
+    for (let y = rect_height.length; y > 0; y--) {
+        for (let i = 0; i < y; i++) {
             if (rect_height[i] > rect_height[i + 1]) {
                 let c = rect_height[i];
                 rect_height[i] = rect_height[i + 1];
                 rect_height[i + 1] = c;
-
-                changed = true;
             }
         }
-    } while (changed);
+    }
 
     console.log(rect_height);
 }
