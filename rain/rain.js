@@ -55,6 +55,7 @@ function mainloop() {
 
     for (let i = 0; i < 1500; i++) {
         let vy = Math.floor(Math.random() * (6 - 5 + 1)) + 5;
+        // let vy = Math.floor(Math.random() * (2 - 1 + 1)) + 1;
         // let vx = Math.floor(Math.random() * (2 - (-0.01) + 1)) - 0.01;
         // rain[i]['x'] += vx;
         rain[i]['y'] += vy;
