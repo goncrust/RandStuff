@@ -8,12 +8,15 @@ private:
 	int size;
 	int position;
 
+	int default_size;
+
 public:
 	IntArray(int size)
 	{
 		this->intArray = new int[size];
 
 		this->size = size;
+		this->default_size = size;
 		this->position = 0;
 	}
 
@@ -37,14 +40,14 @@ public:
 		}
 		else
 		{
-			int *newArray = new int[this->size + 1];
+			int *newArray = new int[this->size + this->default_size];
 			memcpy(newArray, this->intArray, 4 * this->size);
 			delete[] intArray;
 			this->intArray = newArray;
 
 			this->intArray[this->position] = item;
 
-			this->size++;
+			this->size += this->default_size;
 			this->position++;
 		}
 	}
