@@ -256,6 +256,7 @@ public:
         Node *head = first;
 
         this->last = head;
+
         Node *node = head;
         Node *cache = nullptr;
         Node *next_node;
@@ -274,6 +275,7 @@ public:
 
             node = next_node;
         }
+
         this->first = node;
     }
 };
