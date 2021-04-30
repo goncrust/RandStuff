@@ -70,7 +70,7 @@ void free_singly_linked_list(SinglyLinkedListNode *node)
     }
 }
 
-// Complete the mergeLists function below.
+// Complete the findMergeNode function below.
 
 /*
  * For your reference:
@@ -81,55 +81,33 @@ void free_singly_linked_list(SinglyLinkedListNode *node)
  * };
  *
  */
-SinglyLinkedListNode *mergeLists(SinglyLinkedListNode *head1, SinglyLinkedListNode *head2)
+int findMergeNode(SinglyLinkedListNode *head1, SinglyLinkedListNode *head2)
 {
 
-    SinglyLinkedListNode *head = head1;
+    /*
+    1--->2
+        \
+         3--->Null
+        /
+      1
+    */
 
-    bool succ = false;
+    SinglyLinkedListNode *head2_original = head2;
 
-    if (head2->data <= head->data)
+    while (head1 != nullptr)
     {
-        SinglyLinkedListNode *new_node = new SinglyLinkedListNode(head2->data);
-        new_node->next = head;
-        head = new_node;
-    }
-
-    head2 = head2->next;
-    head1 = head;
-
-    while (head2 != nullptr)
-    {
-        int value = head2->data;
-
-        while (head1->next != nullptr)
+        while (head2 != nullptr)
         {
-            if (head1->next->data >= value)
-            {
-                SinglyLinkedListNode *original_next = head1->next;
-                head1->next = new SinglyLinkedListNode(value);
-                head1->next->next = original_next;
-
-                succ = true;
-
-                break;
-            }
-
-            head1 = head1->next;
+            if (head1 == head2)
+                return head1->data;
+            head2 = head2->next;
         }
 
-        if (!succ)
-        {
-            SinglyLinkedListNode *original_next = head1->next;
-            head1->next = new SinglyLinkedListNode(value);
-            head1->next->next = original_next;
-        }
-
-        succ = false;
-        head2 = head2->next;
+        head2 = head2_original;
+        head1 = head1->next;
     }
 
-    return head;
+    return -1;
 }
 
 int main()
@@ -142,6 +120,10 @@ int main()
 
     for (int tests_itr = 0; tests_itr < tests; tests_itr++)
     {
+        int index;
+        cin >> index;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
         SinglyLinkedList *llist1 = new SinglyLinkedList();
 
         int llist1_count;
@@ -172,12 +154,30 @@ int main()
             llist2->insert_node(llist2_item);
         }
 
-        SinglyLinkedListNode *llist3 = mergeLists(llist1->head, llist2->head);
+        SinglyLinkedListNode *ptr1 = llist1->head;
+        SinglyLinkedListNode *ptr2 = llist2->head;
 
-        print_singly_linked_list(llist3, " ", fout);
-        fout << "\n";
+        for (int i = 0; i < llist1_count; i++)
+        {
+            if (i < index)
+            {
+                ptr1 = ptr1->next;
+            }
+        }
 
-        free_singly_linked_list(llist3);
+        for (int i = 0; i < llist2_count; i++)
+        {
+            if (i != llist2_count - 1)
+            {
+                ptr2 = ptr2->next;
+            }
+        }
+
+        ptr2->next = ptr1;
+
+        int result = findMergeNode(llist1->head, llist2->head);
+
+        fout << result << "\n";
     }
 
     fout.close();
