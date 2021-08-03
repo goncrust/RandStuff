@@ -1,0 +1,16 @@
+;; Syntax
+(setq symbol &optinal value)
+;; Example
+(setq x 1)
+;; Syntax
+(defvar symbol &optinal value docstring)
+;; Example
+(defvar x 1 "value x")
+
+
+'("hi" "bye")
+(concat "hi" "bye")
+
+
+(defun sum-numbers (num1 num2) "sum 2 nums" (+ num1 num2))
+(sum-numbers 2 3)
