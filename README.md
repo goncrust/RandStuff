@@ -1,2 +1,2 @@
 # RandStuff
-Just random programming stuff
+Just random CS stuff
