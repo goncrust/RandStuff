@@ -1,11 +1,61 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <cstdio>
 
-void loadShaderSource(unsigned int id, const std::string &source) {
-    const char *shader_src[] = {&source[0]};
+typedef struct ShaderSource {
+    char *vertex_source;
+    char *fragment_source;
+} ShaderSource;
 
-    glShaderSource(id, 1, shader_src, NULL); // Load source code
+/* Read source file to buffer */
+char* readSourceFile(const char *file_path) {
+    /* Load file */
+    FILE *src_file = fopen(file_path, "r");
+    if (src_file == NULL) {
+        std::cout << "Error loading shader source file: " << file_path << std::endl;
+    }
+
+    /* Get file size */
+    fseek(src_file, 0, SEEK_END);
+    int length = ftell(src_file);
+    fseek(src_file, 0, SEEK_SET); // return to beginning of file
+
+    /* Read file */
+    char *src = (char*) malloc((length+1)*sizeof(char)); // Allocate memory
+    fread(src, sizeof(char), length, src_file);
+    src[length] = '\0';
+
+    fclose(src_file);
+
+    return src;
+}
+
+/* Create ShaderSource with vertex and fragment shader */
+ShaderSource readShaderSource(const char *folder_path) {
+    std::string vertex_path = folder_path;
+    vertex_path += "/vertex.shader";
+
+    std::string fragment_path = folder_path;
+    fragment_path += "/fragment.shader";
+
+    ShaderSource ss = { 
+        .vertex_source = readSourceFile(&vertex_path[0]),
+        .fragment_source = readSourceFile(&fragment_path[0])
+    };
+
+    return ss;
+}
+
+/* Free vertex and fragment source of ShaderSource */
+void freeShaderSource(ShaderSource ss) {
+    free(ss.fragment_source);
+    free(ss.vertex_source);
+}
+
+/* Load source to shader and compile */
+void loadShaderSource(unsigned int id, const char *source) {
+    glShaderSource(id, 1, &source, NULL); // Load source code
     glCompileShader(id); // Compile
     
     /* Check and print compilation errors */
@@ -28,8 +78,8 @@ void loadShaderSource(unsigned int id, const std::string &source) {
     }
 }
 
-unsigned int createShader(const std::string &vertexShader,
-        const std::string &fragmentShader) {
+/* Create program and compile shaders */
+unsigned int createShader(char* vertexShader, char* &fragmentShader) {
     unsigned int program;
     unsigned int vertex_shader;
     unsigned int fragment_shader;
@@ -93,25 +143,13 @@ int main(void) {
     glEnableVertexAttribArray(0); // Enable vertex attribute array
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // Define vertex attributes
 
-    /* Vertex shader source code */
-    std::string vertexShader = 
-        "#version 330 core\n"
-        "layout(location = 0) in vec4 position;"
-        "void main() {"
-        "   gl_Position = position;"
-        "}";
-
-    /* Fragment shader source code */
-    std::string fragmentShader = 
-        "#version 330 core\n"
-        "layout(location = 0) out vec4 color;"
-        "void main() {"
-        "   color = vec4(1.0, 0.0, 0.0, 0.1);"
-        "}";
+    ShaderSource basic = readShaderSource("resources/shaders/basic");
 
     /* Create and load shader (program) */
-    unsigned int shader = createShader(vertexShader, fragmentShader);
+    unsigned int shader = createShader(basic.vertex_source, basic.fragment_source);
     glUseProgram(shader);
+
+    freeShaderSource(basic);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
