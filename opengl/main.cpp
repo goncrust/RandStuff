@@ -48,7 +48,7 @@ ShaderSource readShaderSource(const char *folder_path) {
 }
 
 /* Free vertex and fragment source of ShaderSource */
-void freeShaderSource(ShaderSource ss) {
+void freeShaderSource(ShaderSource& ss) {
     free(ss.fragment_source);
     free(ss.vertex_source);
 }
@@ -132,17 +132,34 @@ int main(void) {
     /* Print version */
     std::cout << glGetString(GL_VERSION) << std::endl;
 
-    /* -------------- Setup Vertex Buffers ----------------- */
-    float vertices[] = {-0.5, -0.5, 0.0, 0.5, 0.5, -0.5};
+    /* -------------- Setup Vertex Buffer ----------------- */
+    float vertices[] = {
+        -0.5, -0.5,
+         0.5, -0.5,
+         0.5,  0.5,
+        -0.5,  0.5
+    };
 
     unsigned int buffer_id;
     glGenBuffers(1, &buffer_id);              // Generate one buffer
     glBindBuffer(GL_ARRAY_BUFFER, buffer_id); // Select the buffer
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), vertices, GL_STATIC_DRAW); // Write data to buffer
+    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vertices, GL_STATIC_DRAW); // Write data to buffer
 
     glEnableVertexAttribArray(0); // Enable vertex attribute array
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // Define vertex attributes
 
+    /* -------------- Setup Index Buffer ----------------- */
+    unsigned int indices[] {
+        0, 1, 2,
+        2, 3, 0
+    };
+
+    unsigned int ibo;
+    glGenBuffers(1, &ibo);                      // Generate one buffer
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo); // Select the buffer
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW); // Write data to buffer
+
+    /* -------- Setup Vertex and Fragment Shaders ----------- */
     ShaderSource basic = readShaderSource("resources/shaders/basic");
 
     /* Create and load shader (program) */
@@ -157,7 +174,8 @@ int main(void) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         /* ------------------- Draw ------------------------ */
-        glDrawArrays(GL_TRIANGLES, 0, 3); // Draw vertices (from 0 to third)
+        // glDrawArrays(GL_TRIANGLES, 0, 3); // Draw vertices (from 0 to third)
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
