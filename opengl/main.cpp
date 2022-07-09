@@ -115,6 +115,12 @@ int main(void) {
     if (!glfwInit())
         return -1;
 
+    /* Select version and profile */
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    // glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(1080, 760, "Hello World", NULL, NULL);
     if (!window) {
@@ -132,21 +138,26 @@ int main(void) {
     /* Print version */
     std::cout << glGetString(GL_VERSION) << std::endl;
 
+    /* -------------- Setup Vertex Array ------------------ */
+    unsigned int vao; 
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
     /* -------------- Setup Vertex Buffer ----------------- */
     float vertices[] = {
-        -0.5, -0.5,
-         0.5, -0.5,
-         0.5,  0.5,
-        -0.5,  0.5
+        -0.5, -0.5, 0.0,
+         0.5, -0.5, 0.0,
+         0.5,  0.5, 0.0,
+        -0.5,  0.5, 0.0
     };
 
     unsigned int buffer_id;
     glGenBuffers(1, &buffer_id);              // Generate one buffer
     glBindBuffer(GL_ARRAY_BUFFER, buffer_id); // Select the buffer
-    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vertices, GL_STATIC_DRAW); // Write data to buffer
+    glBufferData(GL_ARRAY_BUFFER, 4 * 3 * sizeof(float), vertices, GL_STATIC_DRAW); // Write data to buffer
 
     glEnableVertexAttribArray(0); // Enable vertex attribute array
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0); // Define vertex attributes
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0); // Define vertex attributes
 
     /* -------------- Setup Index Buffer ----------------- */
     unsigned int indices[] {
@@ -168,14 +179,24 @@ int main(void) {
 
     freeShaderSource(basic);
 
+    /* --------------- Reset all binds --------------------- */
+    glUseProgram(0);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
+        /* ------------------- Bind ------------------------ */
+        glUseProgram(shader);
+        glBindVertexArray(vao);
+
         /* ------------------- Draw ------------------------ */
-        // glDrawArrays(GL_TRIANGLES, 0, 3); // Draw vertices (from 0 to third)
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+        // glDrawArrays(GL_TRIANGLES, 0, 3); // Draw vertices (from index 0, 3 vectors)
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
