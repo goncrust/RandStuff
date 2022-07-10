@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
 #include <cstdio>
+#include <iostream>
 
 typedef struct ShaderSource {
     char *vertex_source;
@@ -9,11 +9,12 @@ typedef struct ShaderSource {
 } ShaderSource;
 
 /* Read source file to buffer */
-char* readSourceFile(const char *file_path) {
+char *readSourceFile(const char *file_path) {
     /* Load file */
     FILE *src_file = fopen(file_path, "r");
     if (src_file == NULL) {
-        std::cout << "Error loading shader source file: " << file_path << std::endl;
+        std::cout << "Error loading shader source file: " << file_path
+                  << std::endl;
     }
 
     /* Get file size */
@@ -22,7 +23,7 @@ char* readSourceFile(const char *file_path) {
     fseek(src_file, 0, SEEK_SET); // return to beginning of file
 
     /* Read file */
-    char *src = (char*) malloc((length+1)*sizeof(char)); // Allocate memory
+    char *src = (char *)malloc((length + 1) * sizeof(char)); // Allocate memory
     fread(src, sizeof(char), length, src_file);
     src[length] = '\0';
 
@@ -39,16 +40,14 @@ ShaderSource readShaderSource(const char *folder_path) {
     std::string fragment_path = folder_path;
     fragment_path += "/fragment.shader";
 
-    ShaderSource ss = { 
-        .vertex_source = readSourceFile(&vertex_path[0]),
-        .fragment_source = readSourceFile(&fragment_path[0])
-    };
+    ShaderSource ss = {.vertex_source = readSourceFile(&vertex_path[0]),
+                       .fragment_source = readSourceFile(&fragment_path[0])};
 
     return ss;
 }
 
 /* Free vertex and fragment source of ShaderSource */
-void freeShaderSource(ShaderSource& ss) {
+void freeShaderSource(ShaderSource &ss) {
     free(ss.fragment_source);
     free(ss.vertex_source);
 }
@@ -56,8 +55,8 @@ void freeShaderSource(ShaderSource& ss) {
 /* Load source to shader and compile */
 void loadShaderSource(unsigned int id, const char *source) {
     glShaderSource(id, 1, &source, NULL); // Load source code
-    glCompileShader(id); // Compile
-    
+    glCompileShader(id);                  // Compile
+
     /* Check and print compilation errors */
     int error;
     glGetShaderiv(id, GL_COMPILE_STATUS, &error); // Check if errors occurred
@@ -67,8 +66,9 @@ void loadShaderSource(unsigned int id, const char *source) {
         int length;
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length); // Get error log legth
 
-        char *error_message = (char*) malloc(length*sizeof(char));
-        glGetShaderInfoLog(id, length, &length, error_message); // Get actual error message
+        char *error_message = (char *)malloc(length * sizeof(char));
+        glGetShaderInfoLog(id, length, &length,
+                           error_message); // Get actual error message
 
         std::cout << error_message << std::endl; // print
 
@@ -79,7 +79,7 @@ void loadShaderSource(unsigned int id, const char *source) {
 }
 
 /* Create program and compile shaders */
-unsigned int createShader(char* vertexShader, char* &fragmentShader) {
+unsigned int createShader(char *vertexShader, char *&fragmentShader) {
     unsigned int program;
     unsigned int vertex_shader;
     unsigned int fragment_shader;
@@ -99,8 +99,8 @@ unsigned int createShader(char* vertexShader, char* &fragmentShader) {
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
     glLinkProgram(program);     // Link program
-    glValidateProgram(program); // Validate (result will be stored as part of the
-                                // program object's state)
+    glValidateProgram(program); // Validate (result will be stored as part of
+                                // the program object's state)
 
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
@@ -139,42 +139,39 @@ int main(void) {
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     /* -------------- Setup Vertex Array ------------------ */
-    unsigned int vao; 
+    unsigned int vao;
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
     /* -------------- Setup Vertex Buffer ----------------- */
-    float vertices[] = {
-        -0.5, -0.5, 0.0,
-         0.5, -0.5, 0.0,
-         0.5,  0.5, 0.0,
-        -0.5,  0.5, 0.0
-    };
+    float vertices[] = {-0.5, -0.5, 0.0, 0.5,  -0.5, 0.0,
+                        0.5,  0.5,  0.0, -0.5, 0.5,  0.0};
 
     unsigned int buffer_id;
     glGenBuffers(1, &buffer_id);              // Generate one buffer
     glBindBuffer(GL_ARRAY_BUFFER, buffer_id); // Select the buffer
-    glBufferData(GL_ARRAY_BUFFER, 4 * 3 * sizeof(float), vertices, GL_STATIC_DRAW); // Write data to buffer
+    glBufferData(GL_ARRAY_BUFFER, 4 * 3 * sizeof(float), vertices,
+                 GL_STATIC_DRAW); // Write data to buffer
 
     glEnableVertexAttribArray(0); // Enable vertex attribute array
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0); // Define vertex attributes
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                          0); // Define vertex attributes
 
     /* -------------- Setup Index Buffer ----------------- */
-    unsigned int indices[] {
-        0, 1, 2,
-        2, 3, 0
-    };
+    unsigned int indices[] = {0, 1, 2, 2, 3, 0};
 
     unsigned int ibo;
     glGenBuffers(1, &ibo);                      // Generate one buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo); // Select the buffer
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW); // Write data to buffer
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices,
+                 GL_STATIC_DRAW); // Write data to buffer
 
     /* -------- Setup Vertex and Fragment Shaders ----------- */
     ShaderSource basic = readShaderSource("resources/shaders/basic");
 
     /* Create and load shader (program) */
-    unsigned int shader = createShader(basic.vertex_source, basic.fragment_source);
+    unsigned int shader =
+        createShader(basic.vertex_source, basic.fragment_source);
     glUseProgram(shader);
 
     freeShaderSource(basic);
@@ -185,6 +182,7 @@ int main(void) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+    glClearColor(0.3, 0.3, 0.4, 1); // Set background color
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
         /* Render here */
@@ -195,7 +193,8 @@ int main(void) {
         glBindVertexArray(vao);
 
         /* ------------------- Draw ------------------------ */
-        // glDrawArrays(GL_TRIANGLES, 0, 3); // Draw vertices (from index 0, 3 vectors)
+        // glDrawArrays(GL_TRIANGLES, 0, 3); // Draw vertices (from index 0, 3
+        // vectors)
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */

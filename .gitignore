@@ -1,5 +1,6 @@
 .vscode/
 *.exe
 *.out
+*.kdev4
 .DS_Store
 opengl/App
