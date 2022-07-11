@@ -139,17 +139,17 @@ int main(void) {
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     /* -------------- Setup Vertex Array ------------------ */
-    unsigned int vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
 
     /* -------------- Setup Vertex Buffer ----------------- */
     float vertices[] = {-0.5, -0.5, 0.0, 0.5,  -0.5, 0.0,
                         0.5,  0.5,  0.0, -0.5, 0.5,  0.0};
 
-    unsigned int buffer_id;
-    glGenBuffers(1, &buffer_id);              // Generate one buffer
-    glBindBuffer(GL_ARRAY_BUFFER, buffer_id); // Select the buffer
+    unsigned int VBO;
+    glGenBuffers(1, &VBO);              // Generate one buffer
+    glBindBuffer(GL_ARRAY_BUFFER, VBO); // Select the buffer
     glBufferData(GL_ARRAY_BUFFER, 4 * 3 * sizeof(float), vertices,
                  GL_STATIC_DRAW); // Write data to buffer
 
@@ -160,9 +160,9 @@ int main(void) {
     /* -------------- Setup Index Buffer ----------------- */
     unsigned int indices[] = {0, 1, 2, 2, 3, 0};
 
-    unsigned int ibo;
-    glGenBuffers(1, &ibo);                      // Generate one buffer
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo); // Select the buffer
+    unsigned int IBO;
+    glGenBuffers(1, &IBO);                      // Generate one buffer
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO); // Select the buffer
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices,
                  GL_STATIC_DRAW); // Write data to buffer
 
@@ -190,7 +190,7 @@ int main(void) {
 
         /* ------------------- Bind ------------------------ */
         glUseProgram(shader);
-        glBindVertexArray(vao);
+        glBindVertexArray(VAO);
 
         /* ------------------- Draw ------------------------ */
         // glDrawArrays(GL_TRIANGLES, 0, 3); // Draw vertices (from index 0, 3
