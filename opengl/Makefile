@@ -1,6 +1,6 @@
 
 all:
-	g++ firstdot.cpp -lGL -lglfw -lGLEW -o App
+	g++ firsttriangle.cpp -lGL -lglfw -lGLEW -o App
 
 clean:
 	rm App
