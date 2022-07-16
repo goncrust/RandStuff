@@ -1,6 +1,5 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <cstdio>
 #include <iostream>
 
 /* Because I know I'm just going to create 1 handle I will not return GLuint* */
