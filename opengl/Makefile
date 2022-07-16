@@ -1,6 +1,6 @@
 
 all:
-	g++ shaders.cpp -lGL -lglfw -lGLEW -o App
+	g++ customtestin.cpp -lGL -lglfw -lGLEW -o App
 
 clean:
 	rm App
